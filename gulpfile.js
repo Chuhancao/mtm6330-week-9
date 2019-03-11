@@ -4,7 +4,9 @@ const browserSync = require('browser-sync').create() // load browser-sync and cr
 const postcss = require('gulp-postcss') // load the postcss library
 const autoprefixer = require('autoprefixer') // load the autoprefixer plugin
 const cssnano = require('cssnano') // load the cssnano plugin
-
+const concat = require('gulp-concat')
+const rename = require('gulp-rename')
+const uglify = require('gulp-uglify')
 // Define a task to compile Sass and run autoprefixer and cssnano
 gulp.task('sass', function () {
   const plugins = [
@@ -19,7 +21,15 @@ gulp.task('sass', function () {
     .pipe(gulp.dest('css/min')) // path to output the minified css file
     .pipe(browserSync.stream()) // run the browsersync stream
 })
-
+gulp.task('scripts', function () {
+  return gulp.src('js/*.js')
+  .pipe(concat('main.js'))
+  .pipe(gulp.dest('js/dev'))
+  .pipe(rename('main.min.js'))
+  .pipe(uglify())
+  .pipe(gulp.dest('js/min'))
+  .pipe(browserSync/stream())
+})
 // Define the default task
 gulp.task('default', function () {
   // initialize browserSync on the current folder
@@ -29,3 +39,4 @@ gulp.task('default', function () {
   // watch for changes to any files directly inside the js folder and on change run the task scripts
   gulp.watch('*.html').on('change', browserSync.reload)
 })
+gulp.watch('js/*.js', gulp.series('scripts'))
